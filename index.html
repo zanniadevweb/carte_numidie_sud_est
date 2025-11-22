@@ -1,0 +1,207 @@
+
+		<link rel='stylesheet' href='https://unpkg.com/leaflet@1.9.3/dist/leaflet.css' integrity='sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=' crossorigin=''/>
+		<script src='https://unpkg.com/leaflet@1.9.3/dist/leaflet.js' integrity='sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=' crossorigin=''></script>
+		<div id='map' style='width: 100%; height: 95%; font-size: 25px; margin: 0; border-radius: 0px; border: 2px solid #3c546b;'></div>
+<div style="margin: 10px 0;">    <input id="searchInput" type="text" placeholder="Rechercher par nom ou ID...">    <button onclick="validateSearch()">Rechercher</button>    <button onclick="resetSearch()">Réinitialiser</button>    <span id="searchResults"></span></div><script>
+		window.jsonValues = [["ID","world_region","place_name","alt_name","geo_clue","geometry","type","biblio","Latitude","Longitude"],["0","Tunisie","Aquae Regiae","","","point","villes et domaines","","35.58292","9.718677"],["1","Algérie","Fundus Turris Rotundae","","","point","villes et domaines","","36.37221835634062","6.600561205581001"],["2","Tunisie","Mactar","","","point","villes et domaines","","35.85532181583911","9.208245798625953"],["3","Tunisie","Thelepte","","","point","villes et domaines","","34.966660130622884","8.584326158547299"],["4","Tunisie","Cillium","Kasserine","","point","villes et domaines","","35.1667190540806","8.83329066422902"],["5","Tunisie","Thibaris","","","point","villes et domaines","","36.50594041556087","9.082147040986573"],["6","Tunisie","Thuburnica","","","point","villes et domaines","","36.52840618562201","8.466808287613928"],["7","Tunisie","Thugga","","","point","villes et domaines","","36.420154","9.220169"],["8","Tunisie","Mustis = Vchi Maius = Vehi Maius","","","point","villes et domaines","","36.412427069336914","9.085188528076321"],["9","Tunisie","Zama","","","point","villes et domaines","","36.11186690594038","9.285526022409872"],["10","Tunisie","Grandes Plaines","","","polygon","lieux naturels","","36.45720887929434","8.681208534933639"]];
+		markersJsonGlobal = [{"customMarkerIcon":"assets/css/images/foncier.png"},{"customMarkerIcon":"assets/css/images/foncier.png"},{"customMarkerIcon":"assets/css/images/foncier.png"},{"customMarkerIcon":"assets/css/images/foncier.png"},{"customMarkerIcon":"assets/css/images/foncier.png"},{"customMarkerIcon":"assets/css/images/foncier.png"},{"customMarkerIcon":"assets/css/images/foncier.png"},{"customMarkerIcon":"assets/css/images/foncier.png"},{"customMarkerIcon":"assets/css/images/foncier.png"},{"customMarkerIcon":"assets/css/images/foncier.png"},{"customMarkerIcon":"assets/css/images/lieux_naturels.png"}];
+
+		isUsingDefaultMarkers = markersJsonGlobal !== null ? false : true;
+
+		isUsingCustomIcon = true;
+
+		isUsingLabelsForMarkers = [true,2];
+
+		markers = [];
+
+		var map = L.map('map').setView([34.06627844230634,14.075243136259251], 7);
+
+		var iPointsArray = [["35.58292","9.718677","ID = 0</br>WORLD_REGION = Tunisie</br>PLACE_NAME = Aquae Regiae</br>GEOMETRY = point</br>TYPE = villes et domaines</br>LATITUDE = 35.58292</br>LONGITUDE = 9.718677"],["36.37221835634062","6.600561205581001","ID = 1</br>WORLD_REGION = Algérie</br>PLACE_NAME = Fundus Turris Rotundae</br>GEOMETRY = point</br>TYPE = villes et domaines</br>LATITUDE = 36.37221835634062</br>LONGITUDE = 6.600561205581001"],["35.85532181583911","9.208245798625953","ID = 2</br>WORLD_REGION = Tunisie</br>PLACE_NAME = Mactar</br>GEOMETRY = point</br>TYPE = villes et domaines</br>LATITUDE = 35.85532181583911</br>LONGITUDE = 9.208245798625953"],["34.966660130622884","8.584326158547299","ID = 3</br>WORLD_REGION = Tunisie</br>PLACE_NAME = Thelepte</br>GEOMETRY = point</br>TYPE = villes et domaines</br>LATITUDE = 34.966660130622884</br>LONGITUDE = 8.584326158547299"],["35.1667190540806","8.83329066422902","ID = 4</br>WORLD_REGION = Tunisie</br>PLACE_NAME = Cillium</br>ALT_NAME = Kasserine</br>GEOMETRY = point</br>TYPE = villes et domaines</br>LATITUDE = 35.1667190540806</br>LONGITUDE = 8.83329066422902"],["36.50594041556087","9.082147040986573","ID = 5</br>WORLD_REGION = Tunisie</br>PLACE_NAME = Thibaris</br>GEOMETRY = point</br>TYPE = villes et domaines</br>LATITUDE = 36.50594041556087</br>LONGITUDE = 9.082147040986573"],["36.52840618562201","8.466808287613928","ID = 6</br>WORLD_REGION = Tunisie</br>PLACE_NAME = Thuburnica</br>GEOMETRY = point</br>TYPE = villes et domaines</br>LATITUDE = 36.52840618562201</br>LONGITUDE = 8.466808287613928"],["36.420154","9.220169","ID = 7</br>WORLD_REGION = Tunisie</br>PLACE_NAME = Thugga</br>GEOMETRY = point</br>TYPE = villes et domaines</br>LATITUDE = 36.420154</br>LONGITUDE = 9.220169"],["36.412427069336914","9.085188528076321","ID = 8</br>WORLD_REGION = Tunisie</br>PLACE_NAME = Mustis = Vchi Maius = Vehi Maius</br>GEOMETRY = point</br>TYPE = villes et domaines</br>LATITUDE = 36.412427069336914</br>LONGITUDE = 9.085188528076321"],["36.11186690594038","9.285526022409872","ID = 9</br>WORLD_REGION = Tunisie</br>PLACE_NAME = Zama</br>GEOMETRY = point</br>TYPE = villes et domaines</br>LATITUDE = 36.11186690594038</br>LONGITUDE = 9.285526022409872"],["36.45720887929434","8.681208534933639","ID = 10</br>WORLD_REGION = Tunisie</br>PLACE_NAME = Grandes Plaines</br>GEOMETRY = polygon</br>TYPE = lieux naturels</br>LATITUDE = 36.45720887929434</br>LONGITUDE = 8.681208534933639"]];
+
+		new L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> <a href="https://github.com/zanniadevweb/cms_r-lite-web-gis">- Customized by Alexandre Zanni</a>',
+		maxNativeZoom:19,
+		maxZoom: 19,
+		noWrap: true
+		}).addTo(map);
+		L.control.scale().addTo(map);
+
+		var legend = L.control({position: 'bottomright'});
+		legend.onAdd = function (map) {
+			var div = L.DomUtil.create('div', 'leaflet-legend');
+			div.style.background = 'white';
+			div.style.padding = '8px 12px';
+			div.style.border = '1px solid #ccc';
+			div.style.borderRadius = '6px';
+			div.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
+			div.innerHTML = '<b>Communautés « royales » à l’époque impériale</b><br>' +
+				'<span style="padding-right: 10px;"><img src="assets/css/images/autres_villes.png" style="width:18px; vertical-align:middle;"> Régions</span>'+
+				'<span style="padding-right: 10px;"><img src="assets/css/images/lieux_naturels.png" style="width:18px; vertical-align:middle;"> Lieux naturels</span>'+
+				'<span style="padding-right: 10px;"><img src="assets/css/images/foncier.png" style="width:18px; vertical-align:middle;"> Villes et domaines</span>';
+			return div;
+		};
+		legend.addTo(map);
+
+		fillPolygons(["([35.77977805585362,9.050504101493805],[35.8233096624063,9.223295554563613],[35.82665100809128,9.300216924996981],[35.8143987195748,9.363402336424405],[35.81885431601799,9.430708535553617],[35.832219604966774,9.476037200273273],[35.841128547153026,9.54059620760128],[35.872524602137794,9.633176604836514],[35.88254199774158,9.705977187568093],[35.99487252353836,9.748558660486585],[36.04820134023323,9.858446332534285],[35.87029834220139,10.017783457003391],[35.70359687782023,10.115033946160441],[35.64801054141057,10.091100279168453],[35.54971929509653,9.732591749112878],[35.50611981205062,9.492212466508581],[35.599550179205174,9.14606629955837],[35.69220221142829,9.074639312727411]).color('#0000FF').tooltip(\"Gamonia\")","([36.973401486268976,8.835043809261625],[36.811968335304805,8.818563361160098],[36.76248179913255,8.851524257363115],[36.754781021371755,8.954527057997433],[36.802073585000215,9.168772883316898],[36.800974089371685,9.291002873402993],[36.73387501345752,9.310230062854728],[36.671857090296406,9.311298314556625],[36.57597962031319,9.325032021307866],[36.493230955613704,9.322285279957617],[36.34762414143665,9.244308438096512],[36.17120579794959,9.309162146448424],[36.09912160532716,9.343496413326502],[36.02129214792581,9.371878236163514],[36.03128686739051,9.444666881945105],[35.979078245142674,9.533935975828225],[35.97574460628572,9.595737656208827],[36.10454272279018,9.680886638066555],[36.217622059618144,9.759168766548642],[36.25638619336657,9.878652015284489],[36.257493457595814,10.010495600096474],[36.20100297630182,9.991268410644697],[36.07902191177118,9.989895039969594],[35.96699325004289,9.99013166709069],[35.886934823463996,9.995625149791184],[35.61948868471028,9.93794358143598],[35.36458359102387,9.9242098746847],[35.08640171396237,9.998371891141435],[34.86136788696068,10.27853950886685],[34.59277330863574,10.621882177648008],[34.82530513537327,10.902049795373426],[35.24131416432567,11.132776068794376],[35.38249803962288,11.033893380185408],[35.6462737286212,11.042133604236152],[35.82238438937915,10.63561588439925],[36.05979898109831,10.487596970459023],[36.36336469948377,10.531544832063032],[36.453983677690225,10.803472225737705],[36.85936027934991,11.113853998315847],[37.07001257883322,11.086386584813367],[37.05467222203909,10.90510165569692],[36.88133041489813,10.608453589870017],[36.70539251312352,10.435408884804312],[36.77361639770315,10.292578334591337],[36.857162918295394,10.363993609697825],[36.991086277043955,10.207429352733609],[37.13353243169839,10.201935870033115],[37.24311778062143,10.041731867143243],[37.35016769748693,9.753324025367085],[37.225266061306826,9.239979223657377]).color('#FF0000').tooltip(\"Fossa Regia\")","([35.640607,11.031167],[35.235963,11.136003],[34.817085,10.901636],[34.24861266148712,10.077794353895491],[34.01674559147491,10.033846492291483],[33.679182367205385,10.34148152351942],[33.73401290837474,10.720531829853803],[33.893735210508254,10.951258103274714],[33.76141504943397,11.072114722685706],[33.6014458797995,11.059907281391766],[33.20252172564265,11.34007489911718],[32.78330250146915,12.636536816434832],[32.915243216082004,13.242136897732253],[32.66821817417845,14.263924680024946],[32.37567801600626,15.207582893322156],[31.5924229500195,15.503693902348068],[31.320672654022825,16.02008127619493],[31.18920109909928,16.986934231482664],[30.8597230888096,18.107604702384325],[30.273292239894317,18.23944828719631],[30.519646321200053,16.51449471923981],[30.888008674358808,14.91039777069426],[31.713985701874087,14.80052811668426],[32.29155098017978,13.33926171835169],[32.263688165014536,12.570174140281893],[32.52340783212989,11.05397291494432],[33.34395943506102,9.88935458243865],[34.16593700473694,9.66961527441873],[35.825866, 10.63878]).color('#FFD700').tooltip(\"Emporia\")"]);
+
+		for (var iPoints = 0; iPoints < iPointsArray.length; iPoints++) {
+			createPoint(iPointsArray[iPoints][0],iPointsArray[iPoints][1],iPointsArray[iPoints][2], iPoints);
+		}
+
+		function fillPolygons(polygonLinesForHtmlExport) {
+			if (polygonLinesForHtmlExport !== '') {
+				if (polygonLinesForHtmlExport.includes('|')) {
+					fillPolygonsLoop(polygonLinesForHtmlExport.split('|'));
+				} else {
+					fillPolygonsLoop(polygonLinesForHtmlExport);
+				}
+			}
+		}
+
+		function fillPolygonsLoop(polygonLinesFromFile) {
+			var currPolyPointValues = '';
+			var currPolyPointValSeparated = [];
+			var currPolyPointValue = '';
+			var currPolyPointValuesAsArray = [];
+			var currPolyPointsColor = '';
+			var currPolyPointsTooltip = '';
+			for (var ipolygonLinesFromFile = 0; ipolygonLinesFromFile < polygonLinesFromFile.length; ipolygonLinesFromFile++) {
+				if (polygonLinesFromFile[ipolygonLinesFromFile] !== '') {
+					currPolyPointValues = polygonLinesFromFile[ipolygonLinesFromFile].split('.color')[0].replace('(','').replace(')','');
+					currPolyPointsColor = polygonLinesFromFile[ipolygonLinesFromFile].split('.color(')[1].split(')')[0].replaceAll('\'','');
+					currPolyPointsTooltip = polygonLinesFromFile[ipolygonLinesFromFile].split('.tooltip(')[1].replaceAll('"','').slice(0,-1);
+
+					currPolyPointValSeparated = currPolyPointValues.split(']');
+					for (var icurrPolyPointValues = 0; icurrPolyPointValues < currPolyPointValSeparated.length; icurrPolyPointValues++) {
+						if ( currPolyPointValSeparated[icurrPolyPointValues] !== '') {
+							currPolyPointValue = currPolyPointValSeparated[icurrPolyPointValues].split('[')[1];
+							currPolyPointValuesAsArray.push(currPolyPointValue.replace(' ', '').split(','));
+						}
+					}
+					createPolygon([currPolyPointValuesAsArray], currPolyPointsColor, currPolyPointsTooltip);
+					currPolyPointValuesAsArray = [];
+					currPolyPointsColor = '';
+					currPolyPointsTooltip = '';
+				}
+			}
+		}
+
+		function createPolygon(polyPointsValues, polyPointsColor, polyPointsTooltip) {
+			new L.polygon(polyPointsValues).setStyle({fillColor: polyPointsColor, color: polyPointsColor}).addTo(map).bindTooltip(polyPointsTooltip, {permanent: false, direction:"center"});
+		}
+
+		function createPoint(latitude, longitude, label, markerId) {
+			if (isUsingCustomIcon === true && markersJsonGlobal !== null && markersJsonGlobal[markerId] !== undefined && markersJsonGlobal[markerId].customMarkerIcon) {
+				var customMarkerIcon = L.icon({
+					iconUrl: markersJsonGlobal[markerId].customMarkerIcon,
+					// shadowUrl: 'leaf-shadow.png',
+				
+					iconSize:     [20, 30], // size of the icon
+					// shadowSize:   [50, 64], // size of the shadow
+					// iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+					// shadowAnchor: [4, 62],  // the same for the shadow
+					// popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+				});
+				var paramCustomMarkerIcon = {icon: customMarkerIcon};
+				markers[markerId] = new L.marker([latitude,longitude], paramCustomMarkerIcon).bindPopup(label + '</br>').addTo(map);
+			} else if (markersJsonGlobal !== null && markersJsonGlobal[markerId] !== undefined && markersJsonGlobal[markerId].fillColor) {
+				var paramCustomMarkerIcon = {  
+					fillColor: markersJsonGlobal[markerId].fillColor, // '#3CC1F1'
+					fillOpacity: markersJsonGlobal[markerId].fillOpacity, // 1.0
+					color: markersJsonGlobal[markerId].borderColor, // black
+					weight: markersJsonGlobal[markerId].borderWeight,  // 0.2
+					radius: markersJsonGlobal[markerId].circleRadius, // 2000
+					stroke: markersJsonGlobal[markerId].hasBorder     // true,
+				}
+				markers[markerId] = new L.circle([latitude,longitude], paramCustomMarkerIcon).bindPopup(label + '</br>').addTo(map);
+			} else {
+				var customMarkerIcon = ""
+				markers[markerId] = new L.marker([latitude,longitude], paramCustomMarkerIcon).bindPopup(label + '</br>').addTo(map);
+			}
+			if (isUsingLabelsForMarkers[0] && isUsingLabelsForMarkers[1]) {
+				var labelText = '';
+				try {
+					var row = window.jsonValues && window.jsonValues[Number(markerId) + 1];
+					var parts = [];
+					for (var i = 1; i < isUsingLabelsForMarkers.length; i++) {
+						var col = isUsingLabelsForMarkers[i];
+						if (col === null || col === undefined || col === '') continue;
+						var colIndex = Number(col);
+						if (isNaN(colIndex)) continue;
+						if (row && row[colIndex] !== undefined && String(row[colIndex]).trim() !== '') {
+							parts.push(String(row[colIndex]).trim());
+						}
+					}
+					// fallback if nothing collected
+					if (parts.length === 0 && row) parts.push(String(row[2] || row[1] || row[0] || '').trim());
+					labelText = parts.join(' - ');
+				} catch (e) { labelText = ''; }
+				if (labelText) {
+					markers[markerId].bindTooltip(labelText, {
+						permanent: true,
+						direction: 'right',
+						offset: [8, 0],
+						className: 'marker-label'
+					});
+				}
+				if (labelText) {
+					markers[markerId].bindTooltip(labelText, {
+						permanent: true,
+						direction: 'right',
+						offset: [8, 0],
+						className: 'marker-label'
+					});
+				}
+			(function insertMarkerLabelStyle(){
+			if (document.getElementById('marker-label-style')) return;
+                var css = [
+                  ".leaflet-tooltip.marker-label, .marker-label {",
+                  "  border: none !important;",
+                  "  box-shadow: none !important;",
+                  "  color: #000 !important;",
+                  "  padding: 0 6px !important;",
+                  "  white-space: nowrap;",
+                  "  pointer-events: none;",
+                  "  font-size: 13px;",
+                  "  line-height: 1;",
+                  "  text-shadow: none !important;",
+                  "}",
+                  ".leaflet-tooltip.marker-label::before, .marker-label::before {",
+                  "  display: none !important;",
+                  "}"
+                ].join('\n');
+				var style = document.createElement('style');
+				style.id = 'marker-label-style';
+				style.type = 'text/css';
+				style.appendChild(document.createTextNode(css));
+				document.head.appendChild(style);
+			})();
+			}
+		}
+
+		function validateSearch() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (!query) {
+                alert("Veuillez saisir un terme de recherche");
+                return;
+            }
+            markers.forEach(marker => map.removeLayer(marker));
+            const results = markers.filter(marker => {
+                const popupContent = marker.getPopup()?.getContent()?.toLowerCase() || "";
+                return popupContent.includes(query);
+            });
+            results.forEach(marker => marker.addTo(map));
+            if (results.length === 0) {
+                document.getElementById('searchResults').textContent = "Aucun résultat trouvé";
+                return;
+            }
+            map.fitBounds(L.featureGroup(results).getBounds());
+            document.getElementById('searchResults').textContent = `${results.length} résultat(s) trouvé(s)`;
+        }
+
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').textContent = '';
+            markers.forEach(marker => marker.addTo(map));
+        }
+	</script>
